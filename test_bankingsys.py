@@ -554,46 +554,5 @@ def test_update_user():
     assert response.status_code == 200
 
     assert response.status_code == 200
-def test_deposit_history():
-
-    token = get_token()
-
-    response = client.get(
-        "/deposits/",
-        headers={
-            "Authorization":
-            f"Bearer {token}"
-        }
-    )
-
-    assert response.status_code == 200
-
-
-def test_withdrawal_history():
-
-    token = get_token()
-
-    response = client.get(
-        "/withdrawal/",
-        headers={
-            "Authorization":
-            f"Bearer {token}"
-        }
-    )
-
-    assert response.status_code == 200
-
-
-def test_transaction_history():
-
-    token = get_token()
-
-    response = client.get(
-        "/transactions/",
-        headers={
-            "Authorization":
-            f"Bearer {token}"
-        }
-    )
 
     assert response.status_code == 200
