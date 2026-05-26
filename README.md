@@ -313,7 +313,7 @@ You can authenticate and test every endpoint directly from the browser.
 
 ## Author
 
-**Aarush** — built with FastAPI and SQLAlchemy.
+**Parzival** — built with FastAPI and SQLAlchemy.
 
 ---
 
