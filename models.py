@@ -42,6 +42,10 @@ class User(Base):
         Integer,
         default=0
     )
+    ResetToken = Column(
+        String(255),
+        nullable=True
+    )
 
 class Transaction(Base):
     __tablename__ =  "transactions"

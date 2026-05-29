@@ -56,9 +56,7 @@ def get_token():
 import uuid
 
 def get_normal_user_token():
-
     admin_token = get_token()
-
     username = f"user_{uuid.uuid4().hex[:8]}"
 
     client.post(
@@ -74,7 +72,6 @@ def get_normal_user_token():
             "UserEmail":f"{username}@test.com"
         }
     )
-
     response = client.post(
         "/login",
         data={
@@ -82,14 +79,12 @@ def get_normal_user_token():
             "password":"Test123"
         }
     )
-
     return response.json()["access_token"]
 
 
 def test_create_user():
 
     token = get_token()
-
     username = f"pytest_{uuid.uuid4().hex[:8]}"
     useremail = f"pytest_{uuid.uuid4().hex[:8]}"
     response = client.post(
@@ -105,13 +100,11 @@ def test_create_user():
             "UserEmail":useremail
         }
     )
-
     assert response.status_code == 200
 
 def test_deposit():
 
     token = get_token()
-
     response = client.post(
         "/deposit/",
         headers={
@@ -122,11 +115,8 @@ def test_deposit():
             "Amount":"500"
         }
     )
-
     assert response.status_code == 200
-
     data = response.json()
-
     assert data["Amount"] == "500.00"
 
 def test_negative_deposit():

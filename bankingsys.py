@@ -1,4 +1,5 @@
-from database import engine
+import schemas
+from database import engine, get_db
 from models import *
 from fastapi import FastAPI
 app = FastAPI()
@@ -27,3 +28,4 @@ app.include_router(
 app.include_router(
     transactions.router
 )
+

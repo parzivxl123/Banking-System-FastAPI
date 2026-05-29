@@ -2,6 +2,13 @@ from decimal import Decimal
 from pydantic import BaseModel, ConfigDict
 
 
+class ForgotPassword(BaseModel):
+    UserEmail : str
+
+class ResetPassword(BaseModel):
+    Token : str
+    NewPassword : str
+
 class DepositPost(BaseModel):
     Amount : Decimal
 
