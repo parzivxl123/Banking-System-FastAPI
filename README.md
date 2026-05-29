@@ -300,7 +300,7 @@ You can authenticate and test every endpoint directly from the browser.
 
 ## Roadmap
 
-- [✅] Password reset via email (SMTP)
+- [x] Password reset via email (SMTP)
 - [ ] Pagination for history endpoints
 - [ ] Structured logging (JSON format)
 - [ ] Docker + `docker-compose` setup
