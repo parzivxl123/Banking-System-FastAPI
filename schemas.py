@@ -5,6 +5,9 @@ from pydantic import BaseModel, ConfigDict
 class ForgotPassword(BaseModel):
     UserEmail : str
 
+class RefreshTokenRequest(BaseModel):
+    refresh_token : str
+
 class ResetPassword(BaseModel):
     Token : str
     NewPassword : str

@@ -47,6 +47,28 @@ def create_accestoken(data : dict):
     )
     return encodedjwt
 
+def create_refresh_token(
+        data:dict
+):
+    to_encode = data.copy()
+    expire = datetime.now(UTC)+timedelta(
+        days = 7
+   )
+
+    to_encode.update(
+        {
+            "exp" : expire,
+            "type" : "refresh"
+        }
+    )
+
+    return jwt.encode(
+        to_encode,
+        SECRET_KEY,
+        algorithm=ALGORITHM
+    )
+
+
 @router.post('/login')
 def loginsys(
     form_data: OAuth2PasswordRequestForm= Depends(), db:Session= Depends(get_db)):

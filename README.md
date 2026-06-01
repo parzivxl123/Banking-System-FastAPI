@@ -303,7 +303,7 @@ You can authenticate and test every endpoint directly from the browser.
 - [x] Password reset via email (SMTP)
 - [ ] Pagination for history endpoints
 - [ ] Structured logging (JSON format)
-- [ ] Docker + `docker-compose` setup
+- [x] Docker + `docker-compose` setup
 - [ ] Rate limiting (per user, per endpoint)
 - [ ] Alembic database migrations
 - [ ] Refresh token support
