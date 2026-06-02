@@ -301,7 +301,7 @@ You can authenticate and test every endpoint directly from the browser.
 ## Roadmap
 
 - [x] Password reset via email (SMTP)
-- [ ] Pagination for history endpoints
+- [x] Pagination for history endpoints
 - [ ] Structured logging (JSON format)
 - [x] Docker + `docker-compose` setup
 - [ ] Rate limiting (per user, per endpoint)

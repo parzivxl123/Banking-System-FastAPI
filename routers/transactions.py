@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from sqlalchemy.orm import Session
 
@@ -18,29 +18,38 @@ from routers.auth import get_current_user
 router = APIRouter()
 
 @router.get('/transanctions/')
-def ViewAllTransactions(db:Session = Depends(get_db),current_user : User = Depends(get_current_user)):
-    if current_user.is_Admin:
-        return db.query(Transaction).all()
-    else:
-        raise HTTPException(
-            status_code=403 ,
-            detail="Unauthorised"
-        )
-
-@router.get('/transanctions/{NumberofTransactions}')
-def ViewTransactions(NumberofTransactions:int,db:Session = Depends(get_db), current_user : User = Depends(get_current_user)):
-    if current_user.is_Admin:
-        if 20>=NumberofTransactions>0:
-            return db.query(Transaction).limit(NumberofTransactions).all()
-        if NumberofTransactions<0:
-            return "Invalid Number Of Transactions"
-        else:
-            return "Transactions Number Limit Reached"
-    else:
+def ViewAllTransactions(
+        page: int = Query(1),
+        page_size: int = Query(10),
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)
+):
+    if not current_user.is_Admin:
         raise HTTPException(
             status_code=403,
             detail="Unauthorised"
         )
+
+    start = (page - 1) * page_size
+
+    transaction_query = db.query(
+        Transaction
+    ).order_by(
+        Transaction.TransactionID.desc()
+    )
+
+    history = transaction_query.offset(
+        start
+    ).limit(
+        page_size
+    ).all()
+
+    return {
+        "page": page,
+        "page_size": page_size,
+        "total_transactions": transaction_query.count(),
+        "transactions": history
+    }
 @router.post('/transactions/')
 def addTransactions(transaction : TransactionsPost,db : Session = Depends(get_db), current_user : User = Depends(get_current_user)):
     Sender = current_user
@@ -91,9 +100,33 @@ def addTransactions(transaction : TransactionsPost,db : Session = Depends(get_db
     return newtransaction
 
 @router.get('/transactions/')
-def TransactionbyUser(db : Session = Depends(get_db),current_user : User = Depends(get_current_user)):
-    history = db.query(Transaction).filter(
-        (Transaction.SenderID==current_user.UserID)|(Transaction.RecieverID==current_user.UserID)
+def TransactionbyUser(
+        page: int = Query(1),
+        page_size: int = Query(5),
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)
+):
+    start = (page - 1) * page_size
+
+    transaction_query = db.query(
+        Transaction
+    ).filter(
+        (Transaction.SenderID == current_user.UserID)
+        |
+        (Transaction.RecieverID == current_user.UserID)
+    ).order_by(
+        Transaction.TransactionID.desc()
+    )
+
+    history = transaction_query.offset(
+        start
+    ).limit(
+        page_size
     ).all()
 
-    return history
+    return {
+        "page": page,
+        "page_size": page_size,
+        "total_transactions": transaction_query.count(),
+        "transactions": history
+    }

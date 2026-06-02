@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from sqlalchemy.orm import Session
 
@@ -8,10 +8,22 @@ from schemas import WithdrawalPost, WithdrawalView
 
 from routers.auth import get_current_user
 router = APIRouter()
-@router.get('/withdrawal/', response_model=list[WithdrawalView])
-def displayWithdrawalsByUser(db :Session = Depends(get_db),current_user : User = Depends(get_current_user)):
-    history = db.query(Withdrawal).filter(Withdrawal.UserID == current_user.UserID).all()
-    return history
+@router.get('/withdrawals/')
+def displayWithdrawalsByUser(
+        page: int = Query(1),
+        page_size: int = Query(5),
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)
+):
+    start = (page-1)*page_size
+    withdrawal_query = db.query(Withdrawal).filter(Withdrawal.UserID==current_user.UserID).order_by(Withdrawal.WithdrawalID.desc())
+    history = withdrawal_query.offset(start).limit(page_size).all()
+    return {
+        "page": page,
+        "page_size": page_size,
+        "total_withdrawals": withdrawal_query.count(),
+        "withdrawals": history
+    }
 
 @router.post('/withdrawal/')
 def makeWithdrawal(withdrawal : WithdrawalPost,db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
