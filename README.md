@@ -86,7 +86,6 @@ Banking-System-FastAPI/
 │
 ├── 🐳 Dockerfile                       # Docker image configuration
 ├── 🐳 docker-compose.yml               # Multi-container orchestration
-├── 📄 docker-comose.yml                # Alternative compose file
 ├── 📦 requirements.txt                 # Python dependencies
 ├── 📝 .gitignore                       # Git ignore rules
 ├── 📖 README.md                        # This file
