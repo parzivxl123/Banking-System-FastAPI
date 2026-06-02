@@ -138,12 +138,7 @@ def delete_user(userID : int,db : Session = Depends(get_db), current_user : User
     return user
 
 @router.get('/users/user')
-def ViewYourself(db: Session = Depends(get_db), current_user : User = Depends(get_current_user),):
-    user = User(
-        UserName=current_user.UserName,
-        UserEmail=current_user.UserEmail,
-        UserID= current_user.UserID,
-        UserPassword=current_user.UserPassword,
-        UserBalance= current_user.UserBalance
-    )
+def ViewYourself(current_user : User = Depends(get_current_user),):
+    user = User(UserName=current_user.UserName, UserEmail=current_user.UserEmail, UserID=current_user.UserID,
+                UserPassword=current_user.UserPassword, UserBalance=current_user.UserBalance)
     return user
