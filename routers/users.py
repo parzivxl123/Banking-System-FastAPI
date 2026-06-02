@@ -6,6 +6,15 @@ from database import get_db
 from models import User
 from schemas import *
 
+
+import logging
+
+logging.basicConfig(
+    level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
+
 from routers.auth import (
     get_current_user,
     pwd_context
@@ -20,6 +29,9 @@ def displayallusers(
     db: Session = Depends(get_db)
 ):
     if not current_user.is_Admin:
+        logger.warning(
+            f"Unauthorized transaction access attempt by '{current_user.UserName}'"
+        )
         raise HTTPException(
             status_code=403,
             detail="Unauthorized"
@@ -27,22 +39,10 @@ def displayallusers(
     users = db.query(
         User
     ).all()
-
+    logger.info(
+        f"Admin '{current_user.UserName}' viewed all transactions"
+    )
     return users
-@router.get('/users/{NumberOfUsers}')
-def displaySelectUsers(NumberOfUsers: int,db : Session = Depends(get_db), current_user : User = Depends(get_current_user)):
-    if current_user.is_Admin:
-        if 20>NumberOfUsers>0:
-            return db.query(User).limit(NumberOfUsers).all()
-        if NumberOfUsers>20:
-            return "Limit Exceeded"
-        else:
-            return "Number of Users invalid"
-    else:
-        raise HTTPException(
-            status_code=403,
-            detail="Unauthorised"
-        )
 
 @router.post('/users/')
 def CreateUser(user : UserCreate,db : Session = Depends(get_db), current_user = Depends(get_current_user)):
@@ -135,4 +135,15 @@ def delete_user(userID : int,db : Session = Depends(get_db), current_user : User
         )
     db.delete(user)
     db.commit()
+    return user
+
+@router.get('/users/user')
+def ViewYourself(db: Session = Depends(get_db), current_user : User = Depends(get_current_user),):
+    user = User(
+        UserName=current_user.UserName,
+        UserEmail=current_user.UserEmail,
+        UserID= current_user.UserID,
+        UserPassword=current_user.UserPassword,
+        UserBalance= current_user.UserBalance
+    )
     return user

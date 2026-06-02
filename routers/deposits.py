@@ -7,11 +7,14 @@ from models import Deposit, User
 from schemas import DepositPost, DepositView
 
 from routers.auth import get_current_user
+import logging
+
+logging.basicConfig(
+    level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
 router = APIRouter()
-
-
-
-
 @router.get('/deposits/')
 def displayDepositsByUser(
         page: int = Query(1),
@@ -42,6 +45,9 @@ def makeDeposit(
     )
 ):
     if deposit.Amount <= 0:
+        logger.warning(
+            f"Invalid deposit attempt: User='{current_user.UserName}' Amount={Deposit.Amount}"
+        )
         raise HTTPException(
             status_code=400,
             detail="Invalid Amount"
@@ -52,6 +58,9 @@ def makeDeposit(
     newdeposit = Deposit(
         UserID=current_user.UserID,
         Amount=deposit.Amount
+    )
+    logger.info(
+        f"Deposit successful: User='{current_user.UserName}' Amount={deposit.Amount}"
     )
     db.add(
         newdeposit

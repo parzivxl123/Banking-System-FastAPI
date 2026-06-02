@@ -2,6 +2,11 @@ import schemas
 from database import engine, get_db
 from models import *
 from fastapi import FastAPI
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 app = FastAPI()
 from routers import (
     auth,

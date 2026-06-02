@@ -7,6 +7,13 @@ from models import Withdrawal, User
 from schemas import WithdrawalPost, WithdrawalView
 
 from routers.auth import get_current_user
+import logging
+
+logging.basicConfig(
+    level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
 router = APIRouter()
 @router.get('/withdrawals/')
 def displayWithdrawalsByUser(
@@ -34,6 +41,9 @@ def makeWithdrawal(withdrawal : WithdrawalPost,db: Session = Depends(get_db), cu
             detail="Invalid Amount"
         )
     if current_user.UserBalance<withdrawal.Amount:
+        logger.warning(
+            f"Withdrawal failed: User='{current_user.UserName}' Amount={withdrawal.Amount} Reason='Insufficient Funds'"
+        )
         raise HTTPException(
             status_code=400,
             detail="Insufficient funds"
@@ -43,6 +53,9 @@ def makeWithdrawal(withdrawal : WithdrawalPost,db: Session = Depends(get_db), cu
         UserID=current_user.UserID,
         Amount = withdrawal.Amount,
 
+    )
+    logger.info(
+        f"Withdrawal successful: User='{current_user.UserName}' Amount={withdrawal.Amount}"
     )
     db.add(withdrawal1)
     db.commit()

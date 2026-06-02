@@ -15,6 +15,13 @@ from schemas import (
 )
 
 from routers.auth import get_current_user
+import logging
+
+logging.basicConfig(
+    level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 @router.get('/transanctions/')
@@ -55,6 +62,9 @@ def addTransactions(transaction : TransactionsPost,db : Session = Depends(get_db
     Sender = current_user
     Receiver = db.query(User).filter(User.UserID==transaction.RecieverID).first()
     if Receiver is None:
+        logger.warning(
+            f"Transfer failed: Sender='{current_user.UserID}' ReceiverID={transaction.RecieverID} Reason='Receiver Not Found'"
+        )
         raise HTTPException(
             status_code=404,
             detail="Receiver not Found"
@@ -67,6 +77,9 @@ def addTransactions(transaction : TransactionsPost,db : Session = Depends(get_db
         SenderID=Sender.UserID
     )
     if(Sender.UserBalance<transaction.TransactionAmount):
+        logger.warning(
+            f"Transfer failed: Sender='{Sender.UserName}' Amount={transaction.TransactionAmount} Reason='Insufficient Funds'"
+        )
         raise HTTPException(
             status_code=400,
             detail="Insufficient balance"
@@ -87,6 +100,9 @@ def addTransactions(transaction : TransactionsPost,db : Session = Depends(get_db
 
     Receiver.UserBalance += (
         transaction.TransactionAmount
+    )
+    logger.info(
+        f"Transfer successful: Sender='{Sender.UserName}' Receiver='{Receiver.UserName}' Amount={transaction.TransactionAmount}"
     )
     db.add(
         newtransaction
