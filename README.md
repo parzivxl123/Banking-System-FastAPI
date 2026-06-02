@@ -10,13 +10,13 @@
 [![MySQL](https://img.shields.io/badge/MySQL-Database-4479A1?style=flat-square&logo=mysql&logoColor=white)](https://mysql.com/)
 [![Pytest](https://img.shields.io/badge/Tests-Pytest-blue?style=flat-square&logo=pytest)](https://pytest.org/)
 
-Supports **user management**, **fund transfers**, **deposits**, **withdrawals**, and **full transaction history** — all secured with stateless JWT auth and backed by a relational database.
+A complete banking solution featuring **user management**, **fund transfers**, **deposits**, **withdrawals**, and **comprehensive transaction history** — all secured with stateless JWT authentication and backed by a robust relational database.
 
 </div>
 
 ---
 
-## Table of Contents
+## 📋 Table of Contents
 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
@@ -25,280 +25,253 @@ Supports **user management**, **fund transfers**, **deposits**, **withdrawals**,
 - [API Reference](#api-reference)
 - [Authentication Guide](#authentication-guide)
 - [Running Tests](#running-tests)
-- [Interactive Docs](#interactive-docs)
+- [Interactive Documentation](#interactive-documentation)
 - [Roadmap](#roadmap)
 
 ---
 
-## Features
+## ✨ Features
 
-<table>
-<tr>
-<td width="50%">
-
-**🔐 Authentication**
-- Stateless JWT access tokens
-- Token version invalidation (force logout)
-- Protected routes via dependency injection
-
-**👤 User Management**
-- Register and update users
-- Bcrypt password hashing
-- Account balance tracking
-- Lookup users by ID or username
-
-</td>
-<td width="50%">
-
-**💸 Transactions**
-- Transfer funds between accounts
-- Self-transfer prevention
-- Atomic balance updates
-- Full transaction history
-
-**🏧 Deposits & Withdrawals**
-- Deposit funds to your account
-- Withdraw with insufficient-balance checks
-- Separate history for each operation
-
-</td>
-</tr>
-</table>
+| Category | Details |
+|----------|---------|
+| **🔐 Authentication** | <ul><li>Stateless JWT access tokens</li><li>Token version invalidation (force logout)</li><li>Protected routes via dependency injection</li></ul> |
+| **👤 User Management** | <ul><li>User registration and updates</li><li>Bcrypt password hashing</li><li>Real-time account balance tracking</li><li>User lookup by ID or username</li></ul> |
+| **💸 Transactions** | <ul><li>Transfer funds between accounts</li><li>Self-transfer prevention</li><li>Atomic balance updates</li><li>Complete transaction history</li></ul> |
+| **🏧 Deposits & Withdrawals** | <ul><li>Deposit funds to account</li><li>Withdraw with balance validation</li><li>Separate history for each operation</li></ul> |
 
 ---
 
-## Tech Stack
+## 🛠 Tech Stack
 
-| Layer | Technology |
-|---|---|
-| **Framework** | [FastAPI](https://fastapi.tiangolo.com/) |
-| **ORM** | [SQLAlchemy](https://sqlalchemy.org/) |
-| **Validation** | [Pydantic v2](https://docs.pydantic.dev/) |
-| **Authentication** | `python-jose` (JWT) + `passlib` (bcrypt) |
-| **Database** | MySQL (production) |
-| **Server** | Uvicorn (ASGI) |
-| **Testing** | Pytest + HTTPX |
+| Component | Technology |
+|-----------|-----------|
+| **Framework** | [FastAPI](https://fastapi.tiangolo.com/) — Modern, fast web framework |
+| **ORM** | [SQLAlchemy](https://sqlalchemy.org/) — Flexible database abstraction |
+| **Validation** | [Pydantic v2](https://docs.pydantic.dev/) — Data validation & serialization |
+| **Authentication** | `python-jose` (JWT) + `passlib` (bcrypt) — Secure token & password management |
+| **Database** | MySQL — Production-grade relational database |
+| **Server** | Uvicorn (ASGI) — High-performance async server |
+| **Testing** | Pytest + HTTPX — Comprehensive test suite |
 | **Language** | Python 3.10+ |
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
-banking_system/
+banking-system-fastapi/
 │
-├── bankingsys.py          # App entry point — routes, startup
-├── models.py              # SQLAlchemy ORM models
-├── schemas.py             # Pydantic request/response schemas
-├── database.py            # DB engine, session factory, Base
+├── bankingsys.py               # Main application entry point
+├── models.py                   # SQLAlchemy ORM models
+├── schemas.py                  # Pydantic request/response schemas
+├── database.py                 # Database configuration & session management
 │
-├── test_bankingsys.py     # Pytest test suite
+├── test_bankingsys.py          # Complete test suite
 │
-├── requirements.txt
-├── .gitignore
-└── README.md
+├── requirements.txt            # Python dependencies
+├── .gitignore                  # Git ignore rules
+└── README.md                   # This file
 ```
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Python 3.10+
-- MySQL server running locally (or remotely)
+- **Python 3.10+**
+- **MySQL Server** (local or remote)
+- **pip** (Python package manager)
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/banking-system-api.git
-cd banking-system-api
+git clone https://github.com/parzivxl123/Banking-System-FastAPI.git
+cd Banking-System-FastAPI
 ```
 
-### 2. Create and activate a virtual environment
+### 2. Create & Activate Virtual Environment
 
 ```bash
+# Create virtual environment
 python -m venv .venv
 
-# Windows
+# Activate on Windows
 .venv\Scripts\activate
 
-# macOS / Linux
+# Activate on macOS / Linux
 source .venv/bin/activate
 ```
 
-### 3. Install dependencies
+### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure the database
+### 4. Configure Database Connection
 
-Open `database.py` and set your connection string:
+Edit `database.py` and update your MySQL connection string:
 
 ```python
 DATABASE_URL = "mysql+pymysql://root:yourpassword@localhost/banking_system"
 ```
 
-> 💡 Make sure the `banking_system` database exists in MySQL before running. Create it with:
-> ```sql
-> CREATE DATABASE banking_system;
-> ```
+**Create the database:**
 
-### 5. Start the server
+```sql
+CREATE DATABASE banking_system;
+```
 
-SQLAlchemy creates all tables automatically on startup. Just run:
+### 5. Run the Application
+
+SQLAlchemy automatically creates all required tables on startup.
 
 ```bash
 uvicorn bankingsys:app --reload
 ```
 
-The API is now live at **`http://127.0.0.1:8000`**.  
-Interactive docs are at **`http://127.0.0.1:8000/docs`**.
+✅ **Server is running at:** `http://127.0.0.1:8000`  
+📚 **Interactive docs:** `http://127.0.0.1:8000/docs`
 
 ---
 
-## API Reference
+## 🔌 API Reference
 
-All protected endpoints require a valid JWT in the `Authorization` header.
+All protected endpoints require a valid JWT token in the `Authorization` header.
 
 ### 🔐 Authentication
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|:----:|
-| `POST` | `/login` | Get access token | ❌ |
+| Method | Endpoint | Description | Protected |
+|--------|----------|-------------|:---------:|
+| `POST` | `/login` | Get JWT access token | ❌ |
 
 ### 👤 Users
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|:----:|
+| Method | Endpoint | Description | Protected |
+|--------|----------|-------------|:---------:|
 | `POST` | `/users` | Register a new user | ❌ |
 | `GET` | `/users` | Get current user profile & balance | ✅ |
-| `PUT` | `/users` | Update user details | ✅ |
+| `PUT` | `/users` | Update user information | ✅ |
 
 ### 💸 Transactions
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|:----:|
+| Method | Endpoint | Description | Protected |
+|--------|----------|-------------|:---------:|
 | `POST` | `/transactions` | Transfer funds to another user | ✅ |
-| `GET` | `/transactions/history` | View all outgoing/incoming transfers | ✅ |
+| `GET` | `/transactions/history` | View all transfers (sent & received) | ✅ |
 
 ### 🏦 Deposits
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|:----:|
+| Method | Endpoint | Description | Protected |
+|--------|----------|-------------|:---------:|
 | `POST` | `/deposit` | Deposit funds into account | ✅ |
 | `GET` | `/deposit/history` | View deposit history | ✅ |
 
 ### 💳 Withdrawals
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|:----:|
+| Method | Endpoint | Description | Protected |
+|--------|----------|-------------|:---------:|
 | `POST` | `/withdrawal` | Withdraw funds from account | ✅ |
 | `GET` | `/withdrawal/history` | View withdrawal history | ✅ |
 
 ---
 
-## Authentication Guide
+## 🔑 Authentication Guide
 
-### Step 1 — Login and receive a token
+### Step 1: Login & Get Token
 
-```http
-POST /login
-Content-Type: application/json
-```
-
-```json
-{
+```bash
+curl -X POST "http://127.0.0.1:8000/login" \
+  -H "Content-Type: application/json" \
+  -d '{
     "username": "john",
     "password": "John12345"
-}
+  }'
 ```
 
 **Response:**
 
 ```json
 {
-    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "token_type": "bearer"
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer"
 }
 ```
 
-### Step 2 — Authenticate all subsequent requests
+### Step 2: Use Token for Protected Requests
 
-```http
-GET /users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```bash
+curl -X GET "http://127.0.0.1:8000/users" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
-### Step 3 — Make a transfer
+### Step 3: Transfer Funds
 
-```http
-POST /transactions
-Authorization: Bearer eyJ...
-Content-Type: application/json
-```
-
-```json
-{
+```bash
+curl -X POST "http://127.0.0.1:8000/transactions" \
+  -H "Authorization: Bearer eyJ..." \
+  -H "Content-Type: application/json" \
+  -d '{
     "recipient_username": "alice",
     "amount": 250.00
-}
+  }'
 ```
 
-**Common error responses:**
+### Error Responses
 
-| Status | Reason |
-|--------|--------|
-| `401 Unauthorized` | Missing or invalid token |
-| `400 Bad Request` | Self-transfer attempted |
-| `422 Unprocessable Entity` | Insufficient balance |
-| `404 Not Found` | Recipient does not exist |
+| Status Code | Description |
+|-------------|-------------|
+| `401 Unauthorized` | Missing or invalid authentication token |
+| `400 Bad Request` | Invalid request data (e.g., self-transfer) |
+| `404 Not Found` | User or resource not found |
+| `422 Unprocessable Entity` | Insufficient balance or validation error |
+| `500 Internal Server Error` | Database or server error |
 
 ---
 
-## Running Tests
+## ✅ Running Tests
 
 ```bash
-# Run the full test suite
+# Run all tests
 pytest
 
 # Run with verbose output
 pytest -v
 
-# Run a specific test file
+# Run specific test file
 pytest test_bankingsys.py
 
-# Run a specific test function
+# Run specific test
 pytest test_bankingsys.py::test_login_success
 ```
 
-The test suite covers:
+**Test Coverage Includes:**
 
-- ✅ User registration and profile updates
-- ✅ Login and token issuance
-- ✅ Token validation and rejection
-- ✅ Fund transfers (success, self-transfer, insufficient balance)
-- ✅ Deposit and withdrawal flows
+- ✅ User registration and profile management
+- ✅ Login and token generation
+- ✅ Token validation and expiration
+- ✅ Fund transfers with validation
+- ✅ Deposit and withdrawal operations
+- ✅ Transaction history retrieval
 
 ---
 
-## Interactive Docs
+## 📚 Interactive Documentation
 
-FastAPI generates live, interactive API documentation automatically — no extra setup needed.
+FastAPI auto-generates beautiful, interactive API documentation.
 
-| UI | URL |
-|---|---|
+| Documentation | URL |
+|---------------|-----|
 | **Swagger UI** | `http://127.0.0.1:8000/docs` |
 | **ReDoc** | `http://127.0.0.1:8000/redoc` |
-| **OpenAPI JSON** | `http://127.0.0.1:8000/openapi.json` |
+| **OpenAPI Schema** | `http://127.0.0.1:8000/openapi.json` |
 
-You can authenticate and test every endpoint directly from the browser.
+Test all endpoints directly from your browser with built-in authentication!
 
 ---
 
-## Roadmap
+## 🗺 Roadmap
 
 - [x] Password reset via email (SMTP)
 - [ ] Pagination for history endpoints
@@ -311,12 +284,12 @@ You can authenticate and test every endpoint directly from the browser.
 
 ---
 
-## Author
+## 👤 Author
 
-**Parzival** — built with FastAPI and SQLAlchemy.
+**Parzival** — Built with FastAPI and SQLAlchemy  
 
 ---
 
 <div align="center">
-<sub>If this project helped you, consider giving it a ⭐ on GitHub.</sub>
+  <sub>If this project was helpful, please consider giving it a ⭐ on GitHub!</sub>
 </div>
