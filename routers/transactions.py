@@ -59,7 +59,7 @@ def ViewAllTransactions(
         "total_transactions": transaction_query.count(),
         "transactions": history
     }
-@router.post('/transactions/')
+@router.post('/transactions/', response_model=TransactionView)
 def addTransactions(transaction : TransactionsPost,db : Session = Depends(get_db), current_user : User = Depends(get_current_user)):
     Sender = current_user
     Receiver = db.query(User).filter(User.UserID==transaction.RecieverID).first()

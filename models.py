@@ -56,6 +56,16 @@ class User(Base):
         DateTime,
         nullable=True
     )
+    IsVerified = Column(
+        Boolean,
+        default=False
+    )
+
+    VerificationToken = Column(
+        String(255),
+        nullable=True,
+        default=None
+    )
 
 class Transaction(Base):
     __tablename__ =  "transactions"

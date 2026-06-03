@@ -120,6 +120,11 @@ def loginsys(
             status_code=401,
             detail="Wrong Password"
         )
+    if not userfound.IsVerified:
+        raise HTTPException(
+            status_code=403,
+            detail="Please verify your email first"
+        )
     accesstoken = create_accestoken(
         {
             "sub": str(userfound.UserID),
@@ -279,4 +284,31 @@ def resetPassword(
     )
     return {
         "Password Updated"
+    }
+
+@router.get('/verify-email')
+def verify_email(
+    token: str,
+    db: Session = Depends(get_db)
+):
+    user = db.query(User).filter(
+        User.VerificationToken == token
+    ).first()
+    if user is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid verification token"
+        )
+    user.IsVerified = True
+    user.VerificationToken = None
+
+    db.commit()
+    create_audit_log(
+        db,
+        user.UserID,
+        "EMAIL_VERIFIED",
+        "User verified email"
+    )
+    return {
+        "message": "Email verified successfully"
     }
