@@ -4,7 +4,9 @@ from fastapi_mail import (
     MessageSchema,
     MessageType
 )
-
+from fastapi import Request
+from bankingsys import limiter
+from utils import create_audit_log
 from email_config import conf
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -20,13 +22,12 @@ import os
 
 load_dotenv()
 from database import get_db
-from models import User
+from models import User, AuditLog
 import logging
 
 logging.basicConfig(
     level=logging.INFO
 )
-
 logger = logging.getLogger(__name__)
 router = APIRouter()
 pwd_context = CryptContext(
@@ -77,7 +78,9 @@ def create_refresh_token(
 
 
 @router.post('/login')
+@limiter.limit("15/minute")
 def loginsys(
+    request:Request,
     form_data: OAuth2PasswordRequestForm= Depends(), db:Session= Depends(get_db)):
     userfound = db.query(User).filter(User.UserName==form_data.username).first()
 
@@ -90,13 +93,29 @@ def loginsys(
             status_code=404,
             detail="User Not Found"
         )
-    if not pwd_context.verify(
-        form_data.password,
-        userfound.UserPassword
+    if (
+            userfound.LockedUntil is not None
+            and
+            userfound.LockedUntil > datetime.utcnow()
     ):
-        logger.warning(
-            f"Login failed: incorrect password for '{userfound.UserName}'"
+        raise HTTPException(
+            status_code=403,
+            detail="Account temporarily locked"
         )
+    if not pwd_context.verify(
+            form_data.password,
+            userfound.UserPassword
+    ):
+        userfound.FailedLoginAttempts += 1
+        if userfound.FailedLoginAttempts >= 5:
+            userfound.LockedUntil = (
+                    datetime.now(UTC)
+                    + timedelta(minutes=5)
+            )
+            logger.warning(
+                f"Account locked: {userfound.UserName}"
+            )
+        db.commit()
         raise HTTPException(
             status_code=401,
             detail="Wrong Password"
@@ -107,10 +126,20 @@ def loginsys(
             "version" : userfound.token_version
         }
     )
+    create_audit_log(
+        db,
+        userfound.UserID,
+        "LOGIN",
+        "User logged in successfully"
+    )
 
     logger.info(
         f"User '{userfound.UserName}' logged in successfully"
     )
+    userfound.FailedLoginAttempts = 0
+    userfound.LockedUntil = None
+
+    db.commit()
     return {
         "access_token": accesstoken,
         "token_type": "bearer"
@@ -165,23 +194,27 @@ def get_current_user(
 
     return user
 
+
+
 @router.post("/forgotpassword/")
+@limiter.limit("3/minute")
 async def forgotPassword(
-        request:ForgotPassword,
+        request:Request,
+        something:ForgotPassword,
         db : Session = Depends(get_db)
 ):
-    user = db.query(User).filter(User.UserEmail==request.UserEmail).first()
+    user = db.query(User).filter(User.UserEmail==something.UserEmail).first()
 
     if not user :
         logger.warning(
-            f"Password reset requested for unknown email '{request.UserEmail}'"
+            f"Password reset somethinged for unknown email '{something.UserEmail}'"
         )
         raise HTTPException(
             status_code=404,
             detail="User Not Found"
         )
     logger.info(
-        f"Password reset requested: Email='{user.UserEmail}'"
+        f"Password reset somethinged: Email='{user.UserEmail}'"
     )
     token = str(uuid.uuid4())
 
@@ -203,33 +236,47 @@ Your Password reset token:
         message
 
     )
+    create_audit_log(
+        db,
+        user.UserID,
+        "PASSWORD_RESET",
+        "Password reset completed"
+    )
     return {
         "Check Your Mail"
     }
 
 
 @router.post("/resetpassword/")
+@limiter.limit("5/minute")
 def resetPassword(
-        request:ResetPassword,
+        request:Request,
+        something:ResetPassword,
         db : Session = Depends(get_db)
 ):
-    user = db.query(User).filter(User.ResetToken==request.Token).first()
+    user = db.query(User).filter(User.ResetToken==something.Token).first()
     if not user :
         logger.warning(
-            f"Password reset failed: Invalid token '{request.Token}'"
+            f"Password reset failed: Invalid token '{something.Token}'"
         )
         raise HTTPException(
             status_code=404,
             detail="User Not Found for given Token"
         )
 
-    user.UserPassword = pwd_context.hash(request.NewPassword)
+    user.UserPassword = pwd_context.hash(something.NewPassword)
     user.ResetToken = None
     user.token_version+=1
     logger.info(
         f"Password reset successful: User='{user.UserName}'"
     )
     db.commit()
+    create_audit_log(
+        db,
+        user.UserID,
+        "PASSWORD_RESET",
+        "Password reset completed"
+    )
     return {
         "Password Updated"
     }

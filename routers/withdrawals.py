@@ -9,6 +9,8 @@ from schemas import WithdrawalPost, WithdrawalView
 from routers.auth import get_current_user
 import logging
 
+from utils import create_audit_log
+
 logging.basicConfig(
     level=logging.INFO
 )
@@ -32,7 +34,7 @@ def displayWithdrawalsByUser(
         "withdrawals": history
     }
 
-@router.post('/withdrawal/')
+@router.post('/withdrawal/', response_model=WithdrawalView)
 def makeWithdrawal(withdrawal : WithdrawalPost,db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
 
     if withdrawal.Amount <=0 :
@@ -60,4 +62,12 @@ def makeWithdrawal(withdrawal : WithdrawalPost,db: Session = Depends(get_db), cu
     db.add(withdrawal1)
     db.commit()
     db.refresh(withdrawal1)
+
+    create_audit_log(
+        db,
+        current_user.UserID,
+        "WITHDRAWAL",
+        f"Withdrew {withdrawal.Amount}"
+    )
+    print(withdrawal1.__dict__)
     return withdrawal1

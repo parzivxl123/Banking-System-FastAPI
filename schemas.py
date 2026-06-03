@@ -49,6 +49,18 @@ class UserCreate(BaseModel):
     is_Admin: bool = False
     token_version: int = 0
     UserEmail: str
+class UserRegister(BaseModel):
+
+    UserName: str = Field(
+        min_length=1
+    )
+
+    UserPassword: str = Field(
+        min_length=1
+    )
+
+    UserBalance: Decimal
+    UserEmail: str
 
 class UserUpdate(BaseModel):
     UserName: str = Field(

@@ -1,14 +1,16 @@
 from tkinter.constants import CASCADE
 
+from DateTime import DateTime
 from sqlalchemy import (
     Column,
     Integer,
     String,
     DECIMAL,
     Boolean,
-    ForeignKey
+    ForeignKey,
+    DateTime
 )
-
+from datetime import datetime, UTC
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -44,6 +46,14 @@ class User(Base):
     )
     ResetToken = Column(
         String(255),
+        nullable=True
+    )
+    FailedLoginAttempts = Column(
+        Integer,
+        default=0
+    )
+    LockedUntil = Column(
+        DateTime,
         nullable=True
     )
 
@@ -127,4 +137,30 @@ class Withdrawal(Base):
     )
     user = relationship(
         "User"
+    )
+
+
+class AuditLog(Base):
+    __tablename__ = "audit_logs"
+
+    LogID = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    UserID = Column(
+        Integer,
+        ForeignKey("users.UserID")
+    )
+
+    Action = Column(
+        String(100)
+    )
+    Details = Column(
+        String(500)
+    )
+    Created_At = Column(
+        DateTime,
+        default=lambda:datetime.now(UTC)
     )

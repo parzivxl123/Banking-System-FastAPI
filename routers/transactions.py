@@ -17,6 +17,8 @@ from schemas import (
 from routers.auth import get_current_user
 import logging
 
+from utils import create_audit_log
+
 logging.basicConfig(
     level=logging.INFO
 )
@@ -70,12 +72,7 @@ def addTransactions(transaction : TransactionsPost,db : Session = Depends(get_db
             detail="Receiver not Found"
         )
 
-    newtransaction = Transaction(
-        TransactionAmount=transaction.TransactionAmount,
-        TransactionStatus = "Done",
-        RecieverID = Receiver.UserID,
-        SenderID=Sender.UserID
-    )
+
     if(Sender.UserBalance<transaction.TransactionAmount):
         logger.warning(
             f"Transfer failed: Sender='{Sender.UserName}' Amount={transaction.TransactionAmount} Reason='Insufficient Funds'"
@@ -94,26 +91,47 @@ def addTransactions(transaction : TransactionsPost,db : Session = Depends(get_db
             status_code = 400,
             detail= "Sender cannot same as receiver"
         )
-    Sender.UserBalance -= (
-        transaction.TransactionAmount
-    )
+    try:
+        newtransaction = Transaction(
+            TransactionAmount=transaction.TransactionAmount,
+            TransactionStatus="Done",
+            RecieverID=Receiver.UserID,
+            SenderID=Sender.UserID
+        )
+        Sender.UserBalance -= (
+            transaction.TransactionAmount
+        )
 
-    Receiver.UserBalance += (
-        transaction.TransactionAmount
-    )
-    logger.info(
-        f"Transfer successful: Sender='{Sender.UserName}' Receiver='{Receiver.UserName}' Amount={transaction.TransactionAmount}"
-    )
-    db.add(
-        newtransaction
-    )
+        Receiver.UserBalance += (
+            transaction.TransactionAmount
+        )
+        db.add(
+            newtransaction
+        )
 
-    db.commit()
+        db.commit()
 
-    db.refresh(
-        newtransaction
-    )
+        db.refresh(
+            newtransaction
+        )
+        logger.info(
+            f"Transfer successful: Sender='{Sender.UserName}' Receiver='{Receiver.UserName}' Amount={transaction.TransactionAmount}"
+        )
+
+        create_audit_log(
+            db,
+            Sender.UserID,
+            "TRANSFER",
+            f"Transferred {transaction.TransactionAmount} to UserID={Receiver.UserID}"
+        )
+    except Exception:
+        db.rollback()
+        raise
+
     return newtransaction
+
+
+
 
 @router.get('/transactions/')
 def TransactionbyUser(

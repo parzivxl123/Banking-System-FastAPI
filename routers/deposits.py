@@ -9,6 +9,8 @@ from schemas import DepositPost, DepositView
 from routers.auth import get_current_user
 import logging
 
+from utils import create_audit_log
+
 logging.basicConfig(
     level=logging.INFO
 )
@@ -68,5 +70,11 @@ def makeDeposit(
     db.commit()
     db.refresh(
         newdeposit
+    )
+    create_audit_log(
+        db,
+        current_user.UserID,
+        "DEPOSIT",
+        f"Deposited {deposit.Amount}"
     )
     return newdeposit

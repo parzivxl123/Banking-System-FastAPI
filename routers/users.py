@@ -1,14 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
-
 from sqlalchemy.orm import Session
-
 from database import get_db
 from models import User
 from schemas import *
-
-
 import logging
-
 logging.basicConfig(
     level=logging.INFO
 )
@@ -39,9 +34,7 @@ def displayallusers(
     users = db.query(
         User
     ).all()
-    logger.info(
-        f"Admin '{current_user.UserName}' viewed all transactions"
-    )
+
     return users
 
 @router.post('/users/')
@@ -114,14 +107,14 @@ def updateuser(
 
 
 @router.delete('/users/' , response_model=UserView)
-def delete_user(userID : int,db : Session = Depends(get_db), current_user : User = Depends(get_current_user)):
+def delete_user(userid : int,db : Session = Depends(get_db), current_user : User = Depends(get_current_user)):
 
     if not current_user.is_Admin :
         raise HTTPException(
             status_code=403,
             detail="Unauthorised"
         )
-    user = db.query(User).filter(User.UserID==userID).first()
+    user = db.query(User).filter(User.UserID==userid).first()
     if user is None:
         raise HTTPException(
             status_code=404,
@@ -139,6 +132,22 @@ def delete_user(userID : int,db : Session = Depends(get_db), current_user : User
 
 @router.get('/users/user')
 def ViewYourself(current_user : User = Depends(get_current_user),):
-    user = User(UserName=current_user.UserName, UserEmail=current_user.UserEmail, UserID=current_user.UserID,
-                UserPassword=current_user.UserPassword, UserBalance=current_user.UserBalance)
+    user = User(UserName=current_user.UserName,
+                UserEmail=current_user.UserEmail,
+                UserID=current_user.UserID,
+                UserPassword=current_user.UserPassword,
+                UserBalance=current_user.UserBalance)
     return user
+
+@router.post('/users/register' , response_model=UserView)
+def NewRegister( user:UserRegister,db:Session = Depends(get_db)):
+    new_user = User(
+        UserName=user.UserName,
+        UserEmail=user.UserEmail,
+        UserPassword=pwd_context.hash(user.UserPassword),
+        UserBalance=user.UserBalance
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
