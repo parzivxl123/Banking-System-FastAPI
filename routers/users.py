@@ -123,7 +123,7 @@ def delete_user(userid : int,db : Session = Depends(get_db), current_user : User
     if user is None:
         raise HTTPException(
             status_code=404,
-        detail = "userNotFound"
+        detail = "userNotFount"
         )
     if user.UserID == current_user.UserID:
 
