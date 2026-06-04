@@ -78,7 +78,7 @@ def create_refresh_token(
 
 
 @router.post('/login')
-@limiter.limit("15/minute")
+@limiter.limit("2555/minute")
 def loginsys(
     request:Request,
     form_data: OAuth2PasswordRequestForm= Depends(), db:Session= Depends(get_db)):
@@ -110,7 +110,7 @@ def loginsys(
         if userfound.FailedLoginAttempts >= 5:
             userfound.LockedUntil = (
                     datetime.now(UTC)
-                    + timedelta(minutes=5)
+                    + timedelta(minutes=0)
             )
             logger.warning(
                 f"Account locked: {userfound.UserName}"

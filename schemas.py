@@ -90,7 +90,7 @@ class TransactionsPost(BaseModel):
 
 
 class TransactionView(BaseModel):
-    TransactionId: int
+    TransactionID: int
     TransactionAmount: Decimal
     RecieverID: int
     SenderID: int
