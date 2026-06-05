@@ -173,7 +173,8 @@ class AuditLog(Base):
 
     UserID = Column(
         Integer,
-        ForeignKey("users.UserID")
+        ForeignKey("users.UserID", ondelete=CASCADE),
+
     )
 
     Action = Column(

@@ -383,5 +383,5 @@ async def VerificationEmail(useremail:str, db:Session = Depends(get_db)):
     fm = FastMail(conf)
     await fm.send_message(
         message)
-
+    return "Check your mail"
 

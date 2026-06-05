@@ -78,7 +78,7 @@ def create_refresh_token(
 
 
 @router.post('/login')
-@limiter.limit("2555/minute")
+@limiter.limit("15/minute")
 def loginsys(
     request:Request,
     form_data: OAuth2PasswordRequestForm= Depends(), db:Session= Depends(get_db)):
@@ -96,7 +96,7 @@ def loginsys(
     if (
             userfound.LockedUntil is not None
             and
-            userfound.LockedUntil > datetime.now(UTC)+timedelta(hours=5, minutes=30)
+            userfound.LockedUntil > datetime.utcnow()+timedelta(hours=5, minutes=30)
     ):
         raise HTTPException(
             status_code=403,

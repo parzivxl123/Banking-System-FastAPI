@@ -54,7 +54,7 @@ function TiltCard({ children }) {
 
                     borderRadius: "16px",
 
-                    background: "#160e26",
+                    backgroundImage: 'linear-gradient(135deg, black 0%, #8342D4 100%)',
 
                     border:
                         "1px solid #2a164d",
