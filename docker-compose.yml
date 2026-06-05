@@ -19,13 +19,14 @@ services:
       - "8001:8000"
     depends_on:
       - db
-    command: sh -c "sleep 20 && uvicorn bankingsys:app --host 0.0.0.0 --port 8000"
+    command: sh -c "sleep 5 && uvicorn bankingsys:app --host 0.0.0.0 --port 8000"
 
   frontend:
     build:
       context: ./frontend
     ports:
       - "5173:5173"
+      - "5174:5174"
     depends_on:
       - api
 

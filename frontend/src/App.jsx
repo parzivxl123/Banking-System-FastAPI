@@ -6,6 +6,7 @@ import Withdrawal from "./pages/Withdrawal"
 import Transfer from "./pages/Transfer";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Statistics from "./pages/Statistics.jsx";
+import Register from "./pages/Register.jsx";
 function App() {
 
   return (
@@ -54,6 +55,14 @@ function App() {
                 <ProtectedRoute>
                     <Statistics />
                 </ProtectedRoute>
+
+                }
+            />
+            <Route
+                path ={"/register"}
+                element = {
+
+                        <Register />
 
                 }
                 />

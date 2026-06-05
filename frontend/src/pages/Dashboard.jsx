@@ -4,10 +4,13 @@ import { useEffect, useState } from "react"
 import api from "../services/api"
 import Sidebar from "../components/Sidebar"
 import TransactionHistory from "../components/TransactionHistory.jsx";
+import DepositHistory from "../components/DepositHistory.jsx";
+import WithdrawalHistory from "../components/WithdrawalHistory.jsx";
 
 function Dashboard() {
-  const [user, setUser] = useState(null)
-
+    const [user, setUser] = useState(null)
+    const [historyType, setHistoryType] =
+        useState("transactions")
   async function loadUser() {
     try {
       const token = localStorage.getItem("token")
@@ -53,12 +56,28 @@ function Dashboard() {
           Welcome {user?.UserName}
         </h1>
 
-        <BalanceCard
-          balance={user?.UserBalance || 0}
-        />
+          <BalanceCard
+              balance={user?.UserBalance || 0}
+          />
 
-        <ActionButtons />
-        <TransactionHistory user={user} />
+          <ActionButtons
+              setHistoryType={setHistoryType}
+          />
+
+          {
+              historyType === "transactions" &&
+              <TransactionHistory user={user}/>
+          }
+
+          {
+              historyType === "deposits" &&
+              <DepositHistory />
+          }
+
+          {
+              historyType === "withdrawals" &&
+              <WithdrawalHistory />
+          }
       </div>
     </div>
   )

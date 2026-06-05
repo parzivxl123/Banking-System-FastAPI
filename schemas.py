@@ -64,7 +64,6 @@ class UserRegister(BaseModel):
         min_length=1
     )
 
-    UserBalance: Decimal
     UserEmail: str
 
 class UserUpdate(BaseModel):

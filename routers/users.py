@@ -159,6 +159,13 @@ async def NewRegister(user:UserRegister, db:Session = Depends(get_db)):
         VerificationToken=verification_token
 
     )
+    existing_user = db.query(User).filter(User.UserName==user.UserName,
+                                          User.UserEmail==user.UserEmail).first()
+    if existing_user:
+        raise HTTPException(
+            status_code=401,
+            detail="Username or email id already taken"
+        )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

@@ -10,7 +10,7 @@ from sqlalchemy import (
     ForeignKey,
     DateTime
 )
-from datetime import datetime, UTC
+from datetime import datetime, UTC, timedelta
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -38,7 +38,7 @@ class User(Base):
     )
     is_Admin = Column(
         Boolean,
-        default=True
+        default=False
     )
     token_version = Column(
         Integer,
@@ -105,7 +105,7 @@ class Transaction(Base):
     )
     TransactionDate = Column(
         DateTime,
-        default=datetime.utcnow
+        default=lambda:datetime.now(UTC)+timedelta(hours=5,minutes=30)
     )
 
 class Deposit(Base):
@@ -132,7 +132,7 @@ class Deposit(Base):
 
     DepositDate = Column(
         DateTime,
-        default=datetime.utcnow
+        default=lambda:datetime.now(UTC)+timedelta(hours=5,minutes=30)
     )
 
 class Withdrawal(Base):
@@ -158,7 +158,7 @@ class Withdrawal(Base):
     )
     WithdrawalDate = Column(
         DateTime,
-        default = lambda :datetime.utcnow()
+        default = lambda :datetime.now(UTC)+timedelta(hours=5,minutes=30)
     )
 
 
@@ -184,5 +184,5 @@ class AuditLog(Base):
     )
     Created_At = Column(
         DateTime,
-        default=lambda:datetime.now(UTC)
+        default=lambda:datetime.now(UTC)+timedelta(hours=5,minutes=30)
     )

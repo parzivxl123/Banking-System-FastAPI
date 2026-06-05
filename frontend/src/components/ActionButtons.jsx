@@ -1,4 +1,4 @@
-function ActionButtons() {
+function ActionButtons({setHistoryType}) {
   const btnStyle = {
     padding: "14px 24px",
     backgroundColor: "#160e26",
@@ -13,18 +13,45 @@ function ActionButtons() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
+<div
+  style={{
+    display: "flex",
         gap: "15px",
         marginTop: "30px"
-      }}
-    >
-      <button style={btnStyle}>Deposit</button>
-      <button style={btnStyle}>Withdraw</button>
-      <button style={btnStyle}>Transfer</button>
-    </div>
+  }}
+>
+  <button
+    style={btnStyle}
+    onClick={() =>
+      setHistoryType("deposits")
+    }
+  >
+    Deposit
+  </button>
+
+  <button
+    style={btnStyle}
+    onClick={() =>
+      setHistoryType("withdrawals")
+    }
+  >
+    Withdraw
+  </button>
+
+  <button
+    style={btnStyle}
+    onClick={() =>
+      setHistoryType("transactions")
+    }
+  >
+    Transfer
+  </button>
+</div>
   )
 }
+
+
+
+
 
 export default ActionButtons

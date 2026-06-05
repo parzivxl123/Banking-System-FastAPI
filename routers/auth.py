@@ -43,7 +43,7 @@ oauth2_scheme = OAuth2PasswordBearer(
 )
 def create_accestoken(data : dict):
     to_encode = data.copy()
-    expire = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(UTC)+timedelta(hours=5, minutes=30) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update(
         {"exp":expire}
     )
@@ -59,7 +59,7 @@ def create_refresh_token(
         data:dict
 ):
     to_encode = data.copy()
-    expire = datetime.now(UTC)+timedelta(
+    expire = datetime.now(UTC)+timedelta(hours=5, minutes=30)+timedelta(
         days = 7
    )
 
@@ -96,7 +96,7 @@ def loginsys(
     if (
             userfound.LockedUntil is not None
             and
-            userfound.LockedUntil > datetime.utcnow()
+            userfound.LockedUntil > datetime.now(UTC)+timedelta(hours=5, minutes=30)
     ):
         raise HTTPException(
             status_code=403,
@@ -109,8 +109,8 @@ def loginsys(
         userfound.FailedLoginAttempts += 1
         if userfound.FailedLoginAttempts >= 5:
             userfound.LockedUntil = (
-                    datetime.now(UTC)
-                    + timedelta(minutes=0)
+                    datetime.now(UTC)+timedelta(hours=5, minutes=30)
+                    + timedelta(minutes=5)
             )
             logger.warning(
                 f"Account locked: {userfound.UserName}"
