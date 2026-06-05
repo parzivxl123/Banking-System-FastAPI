@@ -107,11 +107,6 @@ function Login() {
         >
           Login
         </button>
-
-        <div style={{ marginTop: "20px", fontSize: "12px", color: "#8a7ea3" }}>
-          <p>Email: {email}</p>
-          <p>Password: {password}</p>
-        </div>
       </div>
     </div>
   )

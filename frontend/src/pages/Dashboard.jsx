@@ -58,7 +58,7 @@ function Dashboard() {
         />
 
         <ActionButtons />
-        <TransactionHistory />
+        <TransactionHistory user={user} />
       </div>
     </div>
   )

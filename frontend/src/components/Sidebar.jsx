@@ -52,6 +52,9 @@ function Sidebar() {
             <button style={navButtonStyle} onClick={() => navigate("/transfer")}>
                 Transfer
             </button>
+            <button style={navButtonStyle} onClick={() => navigate("/statistics")}>
+                Statistics
+            </button>
 
             <div style={{ marginTop: "auto" }}>
                 <button

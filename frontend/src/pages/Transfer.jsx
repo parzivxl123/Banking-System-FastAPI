@@ -5,6 +5,7 @@ import api from "../services/api"
 function Transfer() {
     const [receiverId, setReceiverId] = useState("")
     const [amount, setAmount] = useState("")
+    const [username , setUsername] = useState("")
     const [loading, setLoading] = useState(false)
 
     const navigate = useNavigate()
@@ -15,7 +16,8 @@ function Transfer() {
 
             await api.post("/transactions/", {
                 TransactionAmount: Number(amount),
-                RecieverID: Number(receiverId)
+                RecieverID: Number(receiverId),
+                UserName : String(username)
             })
 
             alert("Transfer Successful")
@@ -77,8 +79,29 @@ function Transfer() {
                             outline: "none"
                         }}
                     />
+                    <h4>OR</h4>
                 </div>
 
+
+                <div style={{ marginBottom: "25px" }}>
+                    <p style={{ margin: "0 0 8px 0", fontSize: "14px", color: "#a89ec4" }}>UserName</p>
+                    <input
+                        type="string"
+                        placeholder="Enter username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        style={{
+                            width: "100%",
+                            padding: "14px",
+                            borderRadius: "8px",
+                            border: "1px solid #44226E",
+                            backgroundColor: "#0b0614",
+                            color: "#ffffff",
+                            boxSizing: "border-box",
+                            outline: "none"
+                        }}
+                    />
+                </div>
                 <div style={{ marginBottom: "25px" }}>
                     <p style={{ margin: "0 0 8px 0", fontSize: "14px", color: "#a89ec4" }}>Amount</p>
                     <input
