@@ -64,14 +64,15 @@ def addTransactions(transaction : TransactionsPost,db : Session = Depends(get_db
     Sender = current_user
     Receiver = db.query(User).filter(User.UserID==transaction.RecieverID).first()
     if Receiver is None:
-        logger.warning(
-            f"Transfer failed: Sender='{current_user.UserID}' ReceiverID={transaction.RecieverID} Reason='Receiver Not Found'"
-        )
-        raise HTTPException(
-            status_code=404,
-            detail="Receiver not Found"
-        )
-
+        Receiver = db.query(User).filter(User.UserName==transaction.UserName).first()
+        if Receiver is None:
+            logger.warning(
+                f"Transfer failed: Sender='{current_user.UserID}' ReceiverID={transaction.RecieverID} Reason='Receiver Not Found'"
+            )
+            raise HTTPException(
+                status_code=404,
+                detail="Receiver not Found"
+            )
 
     if(Sender.UserBalance<transaction.TransactionAmount):
         logger.warning(
@@ -151,7 +152,7 @@ def TransactionbyUser(
     ).order_by(
         Transaction.TransactionID.desc()
     )
-
+    total_transactions = transaction_query.count()
     history = transaction_query.offset(
         start
     ).limit(
@@ -161,6 +162,6 @@ def TransactionbyUser(
     return {
         "page": page,
         "page_size": page_size,
-        "total_transactions": transaction_query.count(),
+        "total_transactions": total_transactions,
         "transactions": history
     }

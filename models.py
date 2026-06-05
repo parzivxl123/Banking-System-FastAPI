@@ -38,7 +38,7 @@ class User(Base):
     )
     is_Admin = Column(
         Boolean,
-        default=False
+        default=True
     )
     token_version = Column(
         Integer,
@@ -102,7 +102,10 @@ class Transaction(Base):
     receiver = relationship(
         "User",
         foreign_keys=[RecieverID],
-
+    )
+    TransactionDate = Column(
+        DateTime,
+        default=datetime.utcnow
     )
 
 class Deposit(Base):
@@ -127,6 +130,11 @@ class Deposit(Base):
     )
     user = relationship("User")
 
+    DepositDate = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
+
 class Withdrawal(Base):
 
     __tablename__ = "withdrawals"
@@ -147,6 +155,10 @@ class Withdrawal(Base):
     )
     user = relationship(
         "User"
+    )
+    WithdrawalDate = Column(
+        DateTime,
+        default = lambda :datetime.utcnow()
     )
 
 

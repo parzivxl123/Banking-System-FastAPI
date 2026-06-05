@@ -1,5 +1,9 @@
+import datetime
 from decimal import Decimal
 from pydantic import BaseModel, ConfigDict
+from datetime import datetime
+
+from sqlalchemy import DateTime
 
 
 class ForgotPassword(BaseModel):
@@ -21,6 +25,7 @@ class DepositView(BaseModel):
     DepositID : int
     model_config = ConfigDict(
         from_attributes = True)
+    DepositDate : datetime
 
 class WithdrawalPost(BaseModel):
     Amount : Decimal
@@ -29,7 +34,7 @@ class WithdrawalView(BaseModel):
     UserID : int
     Amount : Decimal
     WithdrawalID : int
-
+    WithdrawalDate : datetime
     model_config = ConfigDict(
         from_attributes = True)
 
@@ -87,6 +92,7 @@ class UserView(BaseModel):
 class TransactionsPost(BaseModel):
     TransactionAmount : Decimal
     RecieverID : int
+    UserName : str
 
 
 class TransactionView(BaseModel):
@@ -95,6 +101,6 @@ class TransactionView(BaseModel):
     RecieverID: int
     SenderID: int
     TransactionStatus : str
-
+    TransactionDate :datetime
     model_config = ConfigDict(
         from_attributes = True)
